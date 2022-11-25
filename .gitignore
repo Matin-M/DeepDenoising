@@ -1,3 +1,6 @@
+# Training datasets
+/flower_photos
+flower_dataset.tgz
 
 # Windows default autosave extension
 *.asv

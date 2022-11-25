@@ -8,6 +8,9 @@ denoisedI = denoiseImage(noisyI, net);
 figure;imshow(denoisedI)
 title('Denoised Image using DnCNN')
 
-%PSNR
+%PSNR:
 psnr_to_original = psnr(denoisedI, I);
 disp("PSNR -> " + psnr_to_original)
+%SSIM:
+ssim_to_original = ssim(denoisedI, I);
+disp("SSIM -> " + ssim_to_original)
