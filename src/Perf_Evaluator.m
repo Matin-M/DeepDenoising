@@ -9,7 +9,6 @@ end
 imds = imageDatastore(MerchData, ...
     'IncludeSubfolders',true,'LabelSource','foldernames');
 
-stdvRange = 0.006+rand(1,75)*(0.19-0.006);
 clear PSNR_dict;
 clear SSIM_dict;
 PSNR_dict = dictionary();
@@ -19,7 +18,9 @@ SSIM_dict = dictionary();
 PSNR_dict("______Average PSNR______") = 1;
 SSIM_dict("______Average SSIM______") = 1;
 
-numIterations = 15;
+%Define the number of test images to use
+numIterations = 1;
+stdvRange = 0.006+rand(1,numIterations)*(0.19-0.006);
 
 %Evaluate perf of denosing methods
 for k=1:numIterations
@@ -32,6 +33,10 @@ for k=1:numIterations
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_35P, "neuralNet_20E_35P");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_40P, "neuralNet_20E_40P");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_45P, "neuralNet_20E_45P");
+    %Evaluate other denoising methods
+    [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @medfilt2, "Median_Filt");
+    [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @imgaussfilt, "Gaussian_Filt");
+    [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @WienerFilt, "Wiener_Filt");
 end
 
 %Compute averages
@@ -55,7 +60,11 @@ function [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict, I, noisyI, de
     %laplacian, etc. 
     %Might need to add some kind of check here that determines if the
     %denoisier parameter is a neural net or a traditional denosing function
-    denoisedI = denoiseImage(noisyI, denoiser);
+    if(isa(denoiser,'SeriesNetwork'))
+        denoisedI = denoiseImage(noisyI, denoiser);
+    else
+        denoisedI = denoiser(noisyI);
+    end
     PSNR_dict(Key) = PSNR_dict(Key) + psnr(denoisedI, I);
     SSIM_dict(Key) = SSIM_dict(Key) + ssim(denoisedI, I);
 end
