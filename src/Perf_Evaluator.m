@@ -16,24 +16,30 @@ PSNR_dict = dictionary();
 SSIM_dict = dictionary();
 
 %Initialize dictionaries
-PSNR_dict(java.util.UUID.randomUUID.toString().toCharArray') = 1;
-SSIM_dict(java.util.UUID.randomUUID.toString().toCharArray') = 1;
+PSNR_dict("______Average PSNR______") = 1;
+SSIM_dict("______Average SSIM______") = 1;
 
-numIterations = 10;
+numIterations = 15;
 
 %Evaluate perf of denosing methods
 for k=1:numIterations
     I=rgb2gray(readimage(imds,k));
     noisyI = imnoise(I,'gaussian',0,stdvRange(k));
+    %Evaluate ML networks
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, defaultNet, "Default");
+    [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_25P, "neuralNet_20E_25P");
+    [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_30P, "neuralNet_20E_30P");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_35P, "neuralNet_20E_35P");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_40P, "neuralNet_20E_40P");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_45P, "neuralNet_20E_45P");
 end
 
+%Compute averages
+PSNR_dict(keys(PSNR_dict)) = PSNR_dict(keys(PSNR_dict))/numIterations;
+SSIM_dict(keys(SSIM_dict)) = SSIM_dict(keys(SSIM_dict))/numIterations;
 
-PSNR_dict(keys(PSNR_dict))/numIterations
-SSIM_dict(keys(SSIM_dict))/numIterations
+disp(PSNR_dict)
+disp(SSIM_dict)
 
 %The denoiser parameter is the denosing method. It can either be a filtering function or
 %a multilayer DnCNN
