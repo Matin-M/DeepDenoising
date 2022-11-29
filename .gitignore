@@ -1,6 +1,7 @@
 # Training datasets
 /flower_photos
 flower_dataset.tgz
+/TrainingData/unsplash-images-collection
 
 # Windows default autosave extension
 *.asv

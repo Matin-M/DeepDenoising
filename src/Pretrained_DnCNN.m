@@ -3,8 +3,8 @@ noisyI = imnoise(I,'gaussian',0,0.01);
 figure;montage({I,noisyI})
 title('Original Image (Left) and Noisy Image (Right)')
 
-net = denoisingNetwork('DnCNN');
-denoisedI = denoiseImage(noisyI, net);
+defaultNet = denoisingNetwork('DnCNN');
+denoisedI = denoiseImage(noisyI, defaultNet);
 figure;imshow(denoisedI)
 title('Denoised Image using DnCNN')
 
