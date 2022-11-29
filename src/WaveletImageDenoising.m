@@ -1,6 +1,6 @@
 
 % Wavelet Image Denoising 
-function output = apply_wavelet_denoising(I)
-    output = wdenoise2(I);
+function output = WaveletImageDenoising(noisyI)
+    output = uint8(wdenoise2(noisyI));
 end
 

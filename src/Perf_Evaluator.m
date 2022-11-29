@@ -19,7 +19,7 @@ PSNR_dict("______Average PSNR______") = 1;
 SSIM_dict("______Average SSIM______") = 1;
 
 %Define the number of test images to use
-numIterations = 1;
+numIterations = input("Please specify the number of images to evaluate: ");
 stdvRange = 0.006+rand(1,numIterations)*(0.19-0.006);
 
 %Evaluate perf of denosing methods
@@ -37,6 +37,7 @@ for k=1:numIterations
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @medfilt2, "Median_Filt");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @imgaussfilt, "Gaussian_Filt");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @WienerFilt, "Wiener_Filt");
+    [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @WaveletImageDenoising, "Wavelet_Filt");
 end
 
 %Compute averages
