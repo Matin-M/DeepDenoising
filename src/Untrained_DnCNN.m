@@ -17,7 +17,11 @@ if ~exist(FlowerData,'dir')
     fprintf("Done.\n")
 end
 
+%Training data store options
 imds = imageDatastore(MerchData, ...
+    'IncludeSubfolders',true,'LabelSource','foldernames');
+
+fimds = imageDatastore(FlowerData, ...
     'IncludeSubfolders',true,'LabelSource','foldernames');
 
 % Add zero-mean gaussian white noise w/ stdv = within [x y]
@@ -36,11 +40,71 @@ montage(minibatch.input)
 figure
 montage(minibatch.response)
 
-%Predefined denoising layers
-layers = dnCNNLayers;
+%Custom DnCNN layers
+customLayers = [
+     imageInputLayer([50 50 1])
+     convolution2dLayer(3, 64, 'NumChannels', 1, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,1,64), Bias=zeros(1,1,64))
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=0)
+     batchNormalizationLayer
+     reluLayer
+     convolution2dLayer(3, 64, 'NumChannels', 64, 'Stride', [1 1],'Padding', [1 1 1 1], Weights=zeros(3,3,64,64), Bias=zeros(1,1,64), BiasLearnRateFactor=1)
+     regressionLayer];
 
 %Training options:
-% - solverName: 'sgdm' = Stochastic gradient descent with momentum
+% - solverName: 'sgdm' = Stochastic gradient descent with momentum,
+% 'adam' = Adam optimizer
 % optimizer, 'rmsprop' = RMSProp optimizer, 'adam' = Adam optimizer
 % - LearnRateSchedule: The algorithm updates the learning rate by LearnRateDropFactor after a
 % certain number of epochs, specified by LearnRateDropPeriod
@@ -53,17 +117,19 @@ options = trainingOptions("adam", ...
     Plots="training-progress", ...
     ExecutionEnvironment='gpu');
 
-[net, info] = trainNetwork(dnimds, layers, options)
+%Train neural net
+[net, info] = trainNetwork(dnimds, dnCNNLayers, options)
 
+%TODO: Remove manual testing results and create testing script
 %Generate noisy image
 I = imread('cameraman.tif');
 noisyI = imnoise(I,'gaussian',0,0.01);
-montage({I,noisyI})
+figure;montage({I,noisyI})
 title('Original Image (Left) and Noisy Image (Right)')
 
 %Denoise noisy image using DnCNN
 denoisedI = denoiseImage(noisyI,net);
-imshow(denoisedI)
+figure;imshow(denoisedI)
 title('Denoised Image')
 
 %Performance Metrics
