@@ -20,15 +20,17 @@ SSIM_dict("______Average SSIM______") = 1;
 
 %Define the number of test images to use
 numIterations = input("Please specify the number of images to evaluate: ");
-stdvRange = 0.005+rand(1,numIterations)*(0.2-0.005);
-stdvTotal = 0;
+minVariance = 0.005^2;
+maxVariance = 0.2^2;
+varianceRange = minVariance+rand(1,numIterations)*(maxVariance-minVariance);
+varianceTotal = 0;
 
 %Evaluate perf of denosing methods
 for k=1:numIterations
     I=rgb2gray(readimage(imds,k));
-    stdvTotal = stdvTotal + stdvRange(k);
-    disp("Starting iteration " + k + " with standard deviation " + stdvRange(k))
-    noisyI = imnoise(I,'gaussian',0,stdvRange(k));
+    varianceTotal = varianceTotal + varianceRange(k);
+    disp("Starting iteration " + k + " with variance " + varianceRange(k))
+    noisyI = imnoise(I,'gaussian',0,varianceRange(k));
     %Evaluate ML networks
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, defaultNet, "Default");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, neuralNet_20E_25P, "neuralNet_20E_25P");
@@ -49,7 +51,7 @@ end
 PSNR_dict(keys(PSNR_dict)) = PSNR_dict(keys(PSNR_dict))/numIterations;
 SSIM_dict(keys(SSIM_dict)) = SSIM_dict(keys(SSIM_dict))/numIterations;
 
-disp("Completed testing with an average standard deviation of " + (stdvTotal/numIterations))
+disp("Completed testing with an average variance of " + (varianceTotal/numIterations))
 disp(PSNR_dict)
 disp(SSIM_dict)
 
