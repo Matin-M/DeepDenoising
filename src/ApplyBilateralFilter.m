@@ -1,3 +1,3 @@
-function output = ApplyBilateralFilter(I, s)
-    output = imbilatfilt(I, s);
+function output = ApplyBilateralFilter(I)
+    output = imbilatfilt(I);
 end
