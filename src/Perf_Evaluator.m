@@ -20,11 +20,14 @@ SSIM_dict("______Average SSIM______") = 1;
 
 %Define the number of test images to use
 numIterations = input("Please specify the number of images to evaluate: ");
-stdvRange = 0.006+rand(1,numIterations)*(0.19-0.006);
+stdvRange = 0.005+rand(1,numIterations)*(0.2-0.005);
+stdvTotal = 0;
 
 %Evaluate perf of denosing methods
 for k=1:numIterations
     I=rgb2gray(readimage(imds,k));
+    stdvTotal = stdvTotal + stdvRange(k);
+    disp("Starting iteration " + k + " with standard deviation " + stdvRange(k))
     noisyI = imnoise(I,'gaussian',0,stdvRange(k));
     %Evaluate ML networks
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, defaultNet, "Default");
@@ -38,12 +41,15 @@ for k=1:numIterations
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @imgaussfilt, "Gaussian_Filt");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @WienerFilt, "Wiener_Filt");
     [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @WaveletImageDenoising, "Wavelet_Filt");
+    [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @imnlmfilt, "Non_Local_Means_Filt");
+    [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict,I, noisyI, @imbilatfilt, "Bilateral_Filt");
 end
 
 %Compute averages
 PSNR_dict(keys(PSNR_dict)) = PSNR_dict(keys(PSNR_dict))/numIterations;
 SSIM_dict(keys(SSIM_dict)) = SSIM_dict(keys(SSIM_dict))/numIterations;
 
+disp("Completed testing with an average standard deviation of " + (stdvTotal/numIterations))
 disp(PSNR_dict)
 disp(SSIM_dict)
 
@@ -59,8 +65,6 @@ function [PSNR_dict, SSIM_dict] = recordVals(PSNR_dict, SSIM_dict, I, noisyI, de
     %denoiseImage only works with neural nets, use a different function here to
     %denoise an image via other approaches like gaussian, median filtering,
     %laplacian, etc. 
-    %Might need to add some kind of check here that determines if the
-    %denoisier parameter is a neural net or a traditional denosing function
     if(isa(denoiser,'SeriesNetwork'))
         denoisedI = denoiseImage(noisyI, denoiser);
     else
