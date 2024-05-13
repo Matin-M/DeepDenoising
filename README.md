@@ -1,5 +1,5 @@
 # DeepDenoising
-A performance and quality evaluation of residual learning deep convolutional nueral networks for image denoising applications based on the architecture outlined in the paper *IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 26, NO. 7, JULY 2017*
+A performance and quality evaluation of residual learning deep convolutional neural networks for image denoising applications based on the architecture outlined in the paper *IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 26, NO. 7, JULY 2017*
 
 # Brief architecture outline
 - 50x50x1 input layer, the input of our DnCNN is a noisy observation modeled by **y = x+v**
